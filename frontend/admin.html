@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFA Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
+        
+        .admin-header {
+            background: #0f5b3d;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-header h1 { font-size: 1.5rem; }
+        
+        .btn-logout {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .stat-card h3 { font-size: 2.5rem; color: #0f5b3d; }
+        .stat-card p { color: #666; margin-top: 0.5rem; }
+        
+        .table-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+        
+        .table-container h2 {
+            margin-bottom: 1rem;
+            color: #0f5b3d;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        tr:hover { background: #f9f9f9; }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-active { background: #e8f5e9; color: #2e7d32; }
+        .badge-individual { background: #e3f2fd; color: #1565c0; }
+        .badge-organization { background: #fce4ec; color: #c62828; }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .login-container h2 { color: #0f5b3d; margin-bottom: 1.5rem; }
+        
+        .form-group { margin-bottom: 1rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; }
+        .form-group input { width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        
+        .btn-login {
+            width: 100%;
+            padding: 0.8rem;
+            background: #0f5b3d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .btn-login:hover { background: #0a3d2a; }
+        
+        .error { color: #f44336; margin-top: 0.5rem; }
+        
+        .hidden { display: none; }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .refresh-btn {
+            padding: 0.5rem 1rem;
+            background: #0f5b3d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <h2>🔐 UFA Admin Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="adminEmail" value="admin@ufa.org" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="adminPassword" value="UFAadmin2024!" required>
+            </div>
+            <button type="submit" class="btn-login">Login to Dashboard</button>
+            <p id="loginError" class="error"></p>
+        </form>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="hidden">
+        <div class="admin-header">
+            <h1>📊 UFA Admin Dashboard</h1>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="container">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalUsers">0</h3>
+                    <p>📝 Total Registered Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalMembers">0</h3>
+                    <p>👥 Total Members</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalSubscribers">0</h3>
+                    <p>📧 Newsletter Subscribers</p>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-container">
+                <div class="section-title">
+                    <h2>📋 Registered Users</h2>
+                    <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>County</th>
+                            <th>Ward</th>
+                            <th>Registered Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <tr><td colspan="7">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Members Table -->
+            <div class="table-container">
+                <div class="section-title">
+                    <h2>👥 Members</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>County</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTable">
+                        <tr><td colspan="8">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Subscribers Table -->
+            <div class="table-container">
+                <div class="section-title">
+                    <h2>📧 Newsletter Subscribers</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Email</th>
+                            <th>Subscribed Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscribersTable">
+                        <tr><td colspan="3">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/admin';
+        let adminToken = '';
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            try {
+                const res = await fetch(API_BASE + '/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    adminToken = data.token;
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('dashboardScreen').classList.remove('hidden');
+                    loadData();
+                } else {
+                    document.getElementById('loginError').textContent = 'Invalid credentials';
+                }
+            } catch (error) {
+                document.getElementById('loginError').textContent = 'Login failed';
+            }
+        });
+
+        // Load all data
+        async function loadData() {
+            await Promise.all([
+                loadUsers(),
+                loadMembers(),
+                loadSubscribers(),
+                loadStats()
+            ]);
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/users?token=${adminToken}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('usersTable');
+                    if (data.users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No users registered yet</td></tr>';
+                    } else {
+                        tbody.innerHTML = data.users.map(u => `
+                            <tr>
+                                <td>${u.id}</td>
+                                <td><strong>${u.name}</strong></td>
+                                <td>${u.email}</td>
+                                <td>${u.phone || '-'}</td>
+                                <td>${u.county || '-'}</td>
+                                <td>${u.ward || '-'}</td>
+                                <td>${new Date(u.registered).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('');
+                    }
+                    document.getElementById('totalUsers').textContent = data.count;
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        async function loadMembers() {
+            try {
+                const res = await fetch(`${API_BASE}/members?token=${adminToken}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('membersTable');
+                    if (data.members.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No members registered yet</td></tr>';
+                    } else {
+                        tbody.innerHTML = data.members.map(m => `
+                            <tr>
+                                <td>${m.memberId}</td>
+                                <td><strong>${m.name}</strong></td>
+                                <td>${m.email}</td>
+                                <td>${m.phone || '-'}</td>
+                                <td>${m.county || '-'}</td>
+                                <td><span class="badge ${m.membershipType === 'individual' ? 'badge-individual' : 'badge-organization'}">${m.membershipType}</span></td>
+                                <td><span class="badge badge-active">${m.status}</span></td>
+                                <td>${new Date(m.joinedDate).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('');
+                    }
+                    document.getElementById('totalMembers').textContent = data.count;
+                }
+            } catch (error) {
+                console.error('Error loading members:', error);
+            }
+        }
+
+        async function loadSubscribers() {
+            try {
+                const res = await fetch(`${API_BASE}/subscribers?token=${adminToken}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('subscribersTable');
+                    if (data.subscribers.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No subscribers yet</td></tr>';
+                    } else {
+                        tbody.innerHTML = data.subscribers.map((s, i) => `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${s.email}</td>
+                                <td>${new Date(s.subscribed_at).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('');
+                    }
+                    document.getElementById('totalSubscribers').textContent = data.count;
+                }
+            } catch (error) {
+                console.error('Error loading subscribers:', error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/stats?token=${adminToken}`);
+                const data = await res.json();
+                if (data.success) {
+                    console.log('📊 Stats:', data.stats);
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function logout() {
+            adminToken = '';
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('dashboardScreen').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
