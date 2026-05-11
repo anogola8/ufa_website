@@ -4,7 +4,7 @@
 // ============================================
 
 // API Configuration
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 let authToken = localStorage.getItem('ufa_token');
 let currentUser = JSON.parse(localStorage.getItem('ufa_user') || 'null');
 
