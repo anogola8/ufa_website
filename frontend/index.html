@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFA - United Future Alliance | We are The Future</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="images/ufa-logo.svg" alt="UFA Logo" onerror="this.style.display='none'">
+                <div class="logo-text">
+                    <h1>UFA</h1>
+                    <span>United Future Alliance</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#leadership" class="nav-link">Leadership</a></li>
+                <li><a href="#programs" class="nav-link">Programs</a></li>
+                <li><a href="#membership" class="nav-link">Membership</a></li>
+                <li><a href="#events" class="nav-link">Events</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <div class="language-selector">
+                    <select id="languageSelect">
+                        <option value="en">EN</option>
+                        <option value="sw">SW</option>
+                    </select>
+                </div>
+                <button class="btn-login" onclick="openLoginModal()">Login</button>
+                <button class="btn-join" onclick="scrollToMembership()">Join Us</button>
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">🌍 Building Sustainable Communities</div>
+                <h1 class="hero-title">
+                    <span class="text-gradient">We are The Future,</span><br>
+                    Unite and Rise
+                </h1>
+                <p class="hero-subtitle">
+                    Together We Build a United, Prosperous, and Sustainable Kenya Through 
+                    Civic Education, Advocacy, and Community Mobilization
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="15000">0</span>
+                        <span class="stat-label">Active Members</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="47">0</span>
+                        <span class="stat-label">Counties</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="500">0</span>
+                        <span class="stat-label">Programs</span>
+                    </div>
+                </div>
+                <div class="hero-cta">
+                    <button class="btn-primary" onclick="scrollToMembership()">
+                        <i class="fas fa-user-plus"></i> Become a Member
+                    </button>
+                    <button class="btn-secondary" onclick="document.getElementById('about').scrollIntoView()">
+                        <i class="fas fa-play"></i> Learn More
+                    </button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card card-1">
+                    <i class="fas fa-handshake"></i>
+                    <span>Policy Advocacy</span>
+                </div>
+                <div class="floating-card card-2">
+                    <i class="fas fa-users"></i>
+                    <span>Grassroots Mobilization</span>
+                </div>
+                <div class="floating-card card-3">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Sustainable Development</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Who We Are</span>
+                <h2>About UFA</h2>
+                <p>United Future Alliance is a grassroots movement committed to transforming communities through civic education and sustainable development.</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="card-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Vision</h3>
+                    <p>A united, prosperous society where every citizen actively participates in sustainable development and democratic governance.</p>
+                </div>
+                <div class="about-card">
+                    <div class="card-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Mission</h3>
+                    <p>To educate, sensitize, and advocate for policy influence while mobilizing membership for collective action aligned with Article 7.</p>
+                </div>
+                <div class="about-card">
+                    <div class="card-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>Core Values</h3>
+                    <p>Integrity, Inclusivity, Transparency, Unity, Resilience, and Accountability in all our operations and engagements.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leadership Section -->
+    <section id="leadership" class="section leadership">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Our Structure</span>
+                <h2>Leadership & Governance</h2>
+                <p>Four-tier structure ensuring representation from national to ward level</p>
+            </div>
+            <div class="structure-grid">
+                <div class="structure-card">
+                    <i class="fas fa-building"></i>
+                    <h4>NEC</h4>
+                    <span>National Executive Committee</span>
+                    <p>Strategic leadership and policy direction</p>
+                </div>
+                <div class="structure-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>CCC</h4>
+                    <span>County Coordinating Committee</span>
+                    <p>County-level implementation</p>
+                </div>
+                <div class="structure-card">
+                    <i class="fas fa-map-pin"></i>
+                    <h4>CoCC</h4>
+                    <span>Sub-County Committee</span>
+                    <p>Grassroots coordination</p>
+                </div>
+                <div class="structure-card">
+                    <i class="fas fa-home"></i>
+                    <h4>WCC</h4>
+                    <span>Ward Coordinating Committee</span>
+                    <p>Community-level mobilization</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="section programs">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">What We Do</span>
+                <h2>Our Programs</h2>
+            </div>
+            <div class="programs-grid">
+                <div class="program-card">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h3>Civic Education</h3>
+                    <p>Public awareness and sensitization aligned with Article 7 on citizens' rights and responsibilities.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="program-card">
+                    <i class="fas fa-balance-scale"></i>
+                    <h3>Policy Advocacy</h3>
+                    <p>Influencing sustainable development policies at county and national government levels.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="program-card">
+                    <i class="fas fa-female"></i>
+                    <h3>Women Empowerment</h3>
+                    <p>Special initiatives for women's leadership, economic empowerment, and inclusion.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="program-card">
+                    <i class="fas fa-child"></i>
+                    <h3>Youth Initiatives</h3>
+                    <p>Youth leadership development, mentorship, and entrepreneurship programs.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="program-card">
+                    <i class="fas fa-universal-access"></i>
+                    <h3>PLWD Inclusion</h3>
+                    <p>Ensuring persons living with disabilities are fully integrated into all programs.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="program-card">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <h3>Partnership Engagement</h3>
+                    <p>Building strategic partnerships for resource mobilization and program sustainability.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Membership Section -->
+    <section id="membership" class="section membership">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Join Us</span>
+                <h2>Membership Registration</h2>
+                <p>Become part of the movement - Individual or Organization</p>
+            </div>
+            <div class="membership-container">
+                <div class="membership-types">
+                    <div class="type-card active" onclick="selectMembershipType('individual')">
+                        <i class="fas fa-user"></i>
+                        <h4>Individual</h4>
+                        <p>For persons 18 years and above</p>
+                    </div>
+                    <div class="type-card" onclick="selectMembershipType('organization')">
+                        <i class="fas fa-building"></i>
+                        <h4>Organization</h4>
+                        <p>For registered entities & CSOs</p>
+                    </div>
+                </div>
+                <form id="membershipForm" class="membership-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="fullName" required placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" id="email" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="phone" placeholder="+254 7XX XXX XXX">
+                        </div>
+                        <div class="form-group">
+                            <label>County</label>
+                            <select id="county">
+                                <option value="">Select County</option>
+                                <option>Nairobi</option><option>Mombasa</option><option>Kisumu</option>
+                                <option>Nakuru</option><option>Kiambu</option><option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ward</label>
+                            <input type="text" id="ward" placeholder="Your ward">
+                        </div>
+                        <div class="form-group">
+                            <label>Password *</label>
+                            <input type="password" id="password" required placeholder="Min 6 characters">
+                        </div>
+                    </div>
+                    <input type="hidden" id="membershipType" value="individual">
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Submit Registration
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="section events">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Calendar</span>
+                <h2>Upcoming Events</h2>
+            </div>
+            <div class="events-grid" id="eventsContainer">
+                <!-- Events loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Newsletter -->
+    <section id="contact" class="section contact">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>UFA Headquarters, Nairobi, Kenya</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@ufaorganization.org</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+254 700 123456</span>
+                    </div>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="newsletter-box">
+                    <h3>Subscribe to Newsletter</h3>
+                    <p>Stay updated with our latest programs, events, and advocacy campaigns.</p>
+                    <div class="newsletter-form">
+                        <input type="email" id="newsletterEmail" placeholder="Enter your email">
+                        <button onclick="subscribeNewsletter()">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>UFA</h3>
+                    <p>We are The Future, Unite and Rise – Together We Build</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#">Constitution</a>
+                    <a href="#">Policy Briefs</a>
+                    <a href="#">Annual Reports</a>
+                    <a href="#">Donate</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Programs</h4>
+                    <a href="#">Civic Education</a>
+                    <a href="#">Women Empowerment</a>
+                    <a href="#">Youth Initiatives</a>
+                    <a href="#">PLWD Inclusion</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 United Future Alliance. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2>Member Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">Login</button>
+            </form>
+            <p class="auth-switch">Don't have an account? <a href="#membership">Register here</a></p>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
