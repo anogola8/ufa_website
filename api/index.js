@@ -1,27 +1,18 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { supabaseAdmin } = require('../backend/config/supabase');
 
 const app = express();
 
-// In-memory storage
-const users = [];
-const members = [];
-const subscribers = [];
-
-// Middleware
 app.use(cors());
 app.use(express.json());
-
-// JWT and bcrypt
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 
 // ============================================
 // AUTH ROUTES
 // ============================================
 
-// Register
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { full_name, email, password, phone, county, ward } = req.body;
@@ -30,26 +21,27 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Name, email and password are required' });
         }
         
-        const existingUser = users.find(u => u.email === email);
+        // Check if user exists
+        const { data: existingUser } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('email', email)
+            .single();
+        
         if (existingUser) {
             return res.status(409).json({ success: false, message: 'User already exists' });
         }
         
-        const password_hash = await bcrypt.hash(password, 10);
+        const password_hash = await bcrypt.hash(password, 12);
         
-        const user = {
-            id: users.length + 1,
-            full_name,
-            email,
-            password_hash,
-            phone: phone || '',
-            county: county || '',
-            ward: ward || '',
-            role: 'member',
-            created_at: new Date().toISOString()
-        };
+        // Insert user
+        const { data: user, error } = await supabaseAdmin
+            .from('users')
+            .insert([{ full_name, email, password_hash, phone, county, ward }])
+            .select()
+            .single();
         
-        users.push(user);
+        if (error) throw error;
         
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
@@ -57,19 +49,22 @@ app.post('/api/auth/register', async (req, res) => {
             { expiresIn: '7d' }
         );
         
-        console.log(`✅ User registered: ${full_name}`);
-        
         res.status(201).json({ success: true, message: 'Registration successful!', token, userId: user.id });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Registration failed' });
+        console.error('Registration error:', error);
+        res.status(500).json({ success: false, message: 'Registration failed: ' + error.message });
     }
 });
 
-// Login
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = users.find(u => u.email === email);
+        
+        const { data: user } = await supabaseAdmin
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .single();
         
         if (!user || !(await bcrypt.compare(password, user.password_hash))) {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -81,110 +76,124 @@ app.post('/api/auth/login', async (req, res) => {
             { expiresIn: '7d' }
         );
         
-        console.log(`✅ User logged in: ${user.full_name}`);
-        
         res.json({ success: true, token, user: { id: user.id, name: user.full_name, role: user.role } });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Login failed' });
     }
 });
 
-// ============================================
-// MEMBER ROUTES
-// ============================================
-
+// Members
 app.post('/api/members/register', async (req, res) => {
     try {
         const { userId, membership_type, organization_name } = req.body;
         
-        if (!userId || !membership_type) {
-            return res.status(400).json({ success: false, message: 'User ID and membership type required' });
-        }
+        const { data, error } = await supabaseAdmin
+            .from('members')
+            .insert([{ user_id: userId, membership_type, organization_name }])
+            .select()
+            .single();
         
-        const existingMember = members.find(m => m.user_id === parseInt(userId));
-        if (existingMember) {
-            return res.status(409).json({ success: false, message: 'Already registered' });
-        }
+        if (error) throw error;
         
-        const member = {
-            id: members.length + 1,
-            user_id: parseInt(userId),
-            membership_type,
-            organization_name: organization_name || '',
-            status: 'active',
-            membership_date: new Date().toISOString()
-        };
-        
-        members.push(member);
-        
-        console.log(`✅ New member: User ${userId}`);
-        
-        res.status(201).json({ success: true, message: 'Membership registered!', memberId: member.id });
+        res.status(201).json({ success: true, message: 'Membership registered!', memberId: data.id });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Registration failed' });
     }
 });
 
-// ============================================
-// EVENTS ROUTES
-// ============================================
-
-app.get('/api/events', (req, res) => {
-    const events = [
-        { id: 1, title: 'County Civic Education Forum', description: 'Comprehensive civic education forum on citizens rights and constitutional provisions.', event_date: '2024-06-15', time: '10:00 AM', location: 'Nairobi County Hall', event_type: 'civic_education' },
-        { id: 2, title: 'Youth Leadership Summit 2024', description: 'Annual youth leadership summit bringing together young leaders from across Kenya.', event_date: '2024-06-20', time: '9:00 AM', location: 'Mombasa Convention Center', event_type: 'youth' },
-        { id: 3, title: 'Women Empowerment Workshop', description: 'Interactive workshop on economic empowerment and leadership skills for women.', event_date: '2024-07-05', time: '2:00 PM', location: 'Kisumu Social Hall', event_type: 'women' },
-        { id: 4, title: 'Policy Advocacy Training', description: 'Training on effective policy advocacy strategies for sustainable development.', event_date: '2024-07-15', time: '11:00 AM', location: 'Nakuru Town Hall', event_type: 'advocacy' },
-        { id: 5, title: 'PLWD Inclusion Forum', description: 'Special forum on inclusion of persons living with disabilities in community development programs.', event_date: '2024-08-01', time: '10:00 AM', location: 'Nairobi', event_type: 'general' }
-    ];
-    
-    res.json({ success: true, count: events.length, events });
+// Events
+app.get('/api/events', async (req, res) => {
+    try {
+        const { data: events, error } = await supabaseAdmin
+            .from('events')
+            .select('*')
+            .order('event_date', { ascending: true });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, events });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch events' });
+    }
 });
 
-// ============================================
-// NEWSLETTER
-// ============================================
-
-app.post('/api/newsletter/subscribe', (req, res) => {
-    const { email } = req.body;
-    
-    if (!email) {
-        return res.status(400).json({ success: false, message: 'Email is required' });
-    }
-    
-    const existing = subscribers.find(s => s.email === email);
-    if (existing) {
-        return res.status(409).json({ success: false, message: 'Already subscribed' });
-    }
-    
-    subscribers.push({ email, subscribed_at: new Date().toISOString() });
-    
-    console.log(`📧 New subscriber: ${email}`);
-    
-    res.json({ success: true, message: 'Successfully subscribed!' });
-});
-
-// ============================================
-// API INFO
-// ============================================
-
-app.get('/api', (req, res) => {
-    res.json({
-        success: true,
-        message: 'UFA API is running! 🇰🇪',
-        version: '1.0.0',
-        stats: { users: users.length, members: members.length, subscribers: subscribers.length },
-        endpoints: {
-            auth: { register: 'POST /api/auth/register', login: 'POST /api/auth/login' },
-            members: { register: 'POST /api/members/register' },
-            events: { list: 'GET /api/events' },
-            newsletter: { subscribe: 'POST /api/newsletter/subscribe' }
+// Newsletter
+app.post('/api/newsletter/subscribe', async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        const { error } = await supabaseAdmin
+            .from('newsletter_subscribers')
+            .insert([{ email }]);
+        
+        if (error) {
+            if (error.code === '23505') {
+                return res.status(409).json({ success: false, message: 'Already subscribed' });
+            }
+            throw error;
         }
-    });
+        
+        res.json({ success: true, message: 'Successfully subscribed!' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Subscription failed' });
+    }
 });
 
-// ============================================
-// EXPORT FOR VERCEL
-// ============================================
+// Admin - Get all users
+app.get('/api/admin/users', async (req, res) => {
+    try {
+        const { data: users, error } = await supabaseAdmin
+            .from('users')
+            .select('id, full_name, email, phone, county, ward, created_at')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, count: users.length, users });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch users' });
+    }
+});
+
+// Admin - Get all members
+app.get('/api/admin/members', async (req, res) => {
+    try {
+        const { data: members, error } = await supabaseAdmin
+            .from('members')
+            .select(`
+                id,
+                user_id,
+                membership_type,
+                organization_name,
+                status,
+                membership_date,
+                users!inner(full_name, email, phone, county)
+            `)
+            .order('membership_date', { ascending: false });
+        
+        if (error) throw error;
+        
+        const formatted = members.map(m => ({
+            memberId: m.id,
+            name: m.users?.full_name || 'Unknown',
+            email: m.users?.email || 'Unknown',
+            phone: m.users?.phone || '',
+            county: m.users?.county || '',
+            membershipType: m.membership_type,
+            organization: m.organization_name || 'N/A',
+            status: m.status,
+            joinedDate: m.membership_date
+        }));
+        
+        res.json({ success: true, count: formatted.length, members: formatted });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch members' });
+    }
+});
+
+// API Info
+app.get('/api', (req, res) => {
+    res.json({ success: true, message: 'UFA API with Supabase is running! 🇰🇪', version: '2.0.0' });
+});
 
 module.exports = app;
